@@ -67,10 +67,48 @@ export class Colleague {
     }
 
     update() {
-        // Create a movement vector that doesn't modify the original direction
-        const movement = this.direction.clone().multiplyScalar(this.speed);
-        this.mesh.position.add(movement);
+        // Calculate next position
+        const nextPosition = this.mesh.position.clone().add(
+            this.direction.clone().multiplyScalar(this.speed)
+        );
         
+        // Check desk collisions
+        const deskPositions = [
+            { x: -18, z: -12 },
+            { x: 0, z: 8 },
+            { x: 18, z: -10 }
+        ];
+        
+        const deskWidth = 6;
+        const deskDepth = 3;
+        
+        let collision = false;
+        deskPositions.forEach(desk => {
+            if (Math.abs(nextPosition.x - desk.x) < deskWidth/2 + 0.5 && 
+                Math.abs(nextPosition.z - desk.z) < deskDepth/2 + 0.5) {
+                collision = true;
+                
+                // Calculate avoidance direction
+                const toDesk = new THREE.Vector3(
+                    desk.x - this.mesh.position.x,
+                    0,
+                    desk.z - this.mesh.position.z
+                ).normalize();
+                
+                // Create a perpendicular direction to avoid the desk
+                this.direction.set(-toDesk.z, 0, toDesk.x);
+                
+                // Randomly choose between clockwise and counterclockwise
+                if (Math.random() < 0.5) {
+                    this.direction.multiplyScalar(-1);
+                }
+            }
+        });
+        
+        if (!collision) {
+            this.mesh.position.copy(nextPosition);
+        }
+
         // Make character face movement direction
         this.mesh.rotation.y = Math.atan2(this.direction.x, this.direction.z);
         
@@ -86,10 +124,8 @@ export class Colleague {
         this.walkCycle += 0.1;
         const swing = Math.sin(this.walkCycle) * 0.2;
         this.mesh.children.forEach((part, index) => {
-            // Arms (indices 5 and 6)
             if (index === 5) part.rotation.x = swing;
             if (index === 6) part.rotation.x = -swing;
-            // Legs (indices 7 and 8)
             if (index === 7) part.rotation.x = -swing;
             if (index === 8) part.rotation.x = swing;
         });

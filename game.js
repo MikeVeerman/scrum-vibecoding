@@ -50,24 +50,91 @@ class Game {
         gridHelper.rotation.x = Math.PI / 2;
         floorGroup.add(gridHelper);
 
-        // Add desk areas (lighter rectangles)
-        const deskGeometry = new THREE.PlaneGeometry(8, 4);
-        const deskMaterial = new THREE.MeshBasicMaterial({ 
-            color: 0x90A4AE,
-            side: THREE.DoubleSide 
-        });
-
-        // Create desk clusters
+        // Add desks with computers and flowers
         const deskPositions = [
-            { x: -15, z: -15 }, { x: -15, z: 15 },
-            { x: 15, z: -15 }, { x: 15, z: 15 },
-            { x: 0, z: -15 }, { x: 0, z: 15 }
+            { x: -18, z: -12 },  // Left desk
+            { x: 0, z: 8 },      // Center desk
+            { x: 18, z: -10 }    // Right desk
         ];
 
         deskPositions.forEach(pos => {
-            const deskArea = new THREE.Mesh(deskGeometry, deskMaterial);
-            deskArea.position.set(pos.x, 0.01, pos.z); // Slightly above floor to prevent z-fighting
-            floorGroup.add(deskArea);
+            // Create desk
+            const deskGeometry = new THREE.BoxGeometry(6, 0.5, 3);
+            const deskMaterial = new THREE.MeshBasicMaterial({ color: 0x8B4513 }); // Wood color
+            const desk = new THREE.Mesh(deskGeometry, deskMaterial);
+            desk.position.set(pos.x, 0, pos.z);
+            this.scene.add(desk);
+
+            // Add desk legs
+            const legGeometry = new THREE.BoxGeometry(0.3, 2, 0.3);
+            const legMaterial = new THREE.MeshBasicMaterial({ color: 0x5C3A21 });
+            
+            const positions = [
+                { x: -2.5, z: -1.2 }, // Front left
+                { x: 2.5, z: -1.2 },  // Front right
+                { x: -2.5, z: 1.2 },  // Back left
+                { x: 2.5, z: 1.2 }    // Back right
+            ];
+
+            positions.forEach(legPos => {
+                const leg = new THREE.Mesh(legGeometry, legMaterial);
+                leg.position.set(
+                    pos.x + legPos.x,
+                    -0.75,
+                    pos.z + legPos.z
+                );
+                this.scene.add(leg);
+            });
+
+            // Add computer
+            const monitorStand = new THREE.Mesh(
+                new THREE.BoxGeometry(0.3, 0.5, 0.3),
+                new THREE.MeshBasicMaterial({ color: 0x2C3E50 })
+            );
+            monitorStand.position.set(pos.x, 0.5, pos.z);
+            this.scene.add(monitorStand);
+
+            const monitor = new THREE.Mesh(
+                new THREE.BoxGeometry(2, 1.2, 0.1),
+                new THREE.MeshBasicMaterial({ color: 0x2C3E50 })
+            );
+            monitor.position.set(pos.x, 1.3, pos.z);
+            this.scene.add(monitor);
+
+            const screen = new THREE.Mesh(
+                new THREE.PlaneGeometry(1.8, 1),
+                new THREE.MeshBasicMaterial({ color: 0x85C1E9 })
+            );
+            screen.position.set(pos.x, 1.3, pos.z + 0.06);
+            this.scene.add(screen);
+
+            // Add flower vase
+            const vaseGeometry = new THREE.CylinderGeometry(0.2, 0.15, 0.4, 8);
+            const vaseMaterial = new THREE.MeshBasicMaterial({ color: 0x48C9B0 });
+            const vase = new THREE.Mesh(vaseGeometry, vaseMaterial);
+            vase.position.set(pos.x + 1.5, 0.45, pos.z - 0.8);
+            this.scene.add(vase);
+
+            // Add flowers
+            const flowerColors = [0xFF69B4, 0xFFFF00, 0xFF6B6B];
+            for (let i = 0; i < 3; i++) {
+                const flowerGeometry = new THREE.SphereGeometry(0.15, 8, 8);
+                const flowerMaterial = new THREE.MeshBasicMaterial({ color: flowerColors[i] });
+                const flower = new THREE.Mesh(flowerGeometry, flowerMaterial);
+                flower.position.set(
+                    pos.x + 1.5 + (Math.random() * 0.2 - 0.1),
+                    0.8 + (Math.random() * 0.1),
+                    pos.z - 0.8 + (Math.random() * 0.2 - 0.1)
+                );
+                this.scene.add(flower);
+            }
+
+            // Add stem
+            const stemGeometry = new THREE.CylinderGeometry(0.02, 0.02, 0.4, 8);
+            const stemMaterial = new THREE.MeshBasicMaterial({ color: 0x228B22 });
+            const stem = new THREE.Mesh(stemGeometry, stemMaterial);
+            stem.position.set(pos.x + 1.5, 0.6, pos.z - 0.8);
+            this.scene.add(stem);
         });
 
         // Add walkways (slightly different color)

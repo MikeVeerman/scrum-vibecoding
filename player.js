@@ -155,15 +155,37 @@ export class Player {
             this.velocity.set(0, 0, 0);
         }
 
-        // Update position based on velocity
-        this.mesh.position.add(this.velocity);
+        // Check desk collisions before moving
+        const nextPosition = this.mesh.position.clone().add(this.velocity);
+        const deskPositions = [
+            { x: -18, z: -12 },
+            { x: 0, z: 8 },
+            { x: 18, z: -10 }
+        ];
         
+        // Desk dimensions
+        const deskWidth = 6;
+        const deskDepth = 3;
+        
+        let collision = false;
+        deskPositions.forEach(desk => {
+            if (Math.abs(nextPosition.x - desk.x) < deskWidth/2 + 0.5 && 
+                Math.abs(nextPosition.z - desk.z) < deskDepth/2 + 0.5) {
+                collision = true;
+            }
+        });
+        
+        // Only update position if there's no collision
+        if (!collision) {
+            this.mesh.position.add(this.velocity);
+        }
+
         // Keep player within bounds
         this.mesh.position.x = Math.max(-24, Math.min(24, this.mesh.position.x));
         this.mesh.position.z = Math.max(-24, Math.min(24, this.mesh.position.z));
 
         // Add walking animation when moving
-        if (this.movingForward || this.movingBackward) {
+        if ((this.movingForward || this.movingBackward) && !collision) {
             this.walkCycle += 0.2;
             const swing = Math.sin(this.walkCycle) * 0.2;
             this.mesh.children.forEach((part, index) => {
