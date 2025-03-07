@@ -21,6 +21,8 @@ class Game {
         this.isGameOver = false;
         this.storyPoints = 0;
         this.lastPointIncrement = Date.now();
+        this.lastColleagueSpawn = Date.now();
+        this.colleagueSpawnInterval = 30000; // 30 seconds
         
         // Set up the game but don't start yet
         this.setupGame();
@@ -191,7 +193,8 @@ class Game {
         this.titleScreen.style.display = 'none';
         this.storyPoints = 0;
         this.lastPointIncrement = Date.now();
-        document.getElementById('storyPoints').textContent = `Story Points: ${this.storyPoints}`;
+        this.lastColleagueSpawn = Date.now();
+        document.getElementById('storyPoints').textContent = `Business Value: ${this.storyPoints}`;
 
         // Set up controls
         this.setupControls();
@@ -241,7 +244,8 @@ class Game {
         document.getElementById('score').textContent = 'WIP: 0';
         this.storyPoints = 0;
         this.lastPointIncrement = Date.now();
-        document.getElementById('storyPoints').textContent = `Story Points: ${this.storyPoints}`;
+        this.lastColleagueSpawn = Date.now();
+        document.getElementById('storyPoints').textContent = `Business Value: ${this.storyPoints}`;
         this.isGameOver = false;
         
         // Reset player position
@@ -256,10 +260,38 @@ class Game {
         
         // Reset colleagues to random positions
         for (let colleague of this.colleagues) {
-            colleague.mesh.position.x = (Math.random() - 0.5) * 40;
-            colleague.mesh.position.z = (Math.random() - 0.5) * 40;
-            colleague.direction = new THREE.Vector3(Math.random() - 0.5, 0, Math.random() - 0.5).normalize();
+            this.scene.remove(colleague.mesh);
         }
+        this.colleagues = [];
+        for (let i = 0; i < 3; i++) {
+            const colleague = new Colleague();
+            this.colleagues.push(colleague);
+            this.scene.add(colleague.mesh);
+        }
+    }
+
+    showNewStakeholderMessage() {
+        const message = document.createElement('div');
+        message.style.position = 'absolute';
+        message.style.top = '50%';
+        message.style.left = '50%';
+        message.style.transform = 'translate(-50%, -50%)';
+        message.style.color = '#ff4444';
+        message.style.fontFamily = 'Arial, sans-serif';
+        message.style.fontSize = '32px';
+        message.style.fontWeight = 'bold';
+        message.style.textShadow = '2px 2px 4px rgba(0,0,0,0.5)';
+        message.textContent = 'A new stakeholder has joined!';
+        document.body.appendChild(message);
+
+        // Fade out and remove after 2 seconds
+        message.style.transition = 'opacity 2s';
+        setTimeout(() => {
+            message.style.opacity = '0';
+            setTimeout(() => {
+                document.body.removeChild(message);
+            }, 2000);
+        }, 2000);
     }
 
     animate() {
@@ -273,10 +305,19 @@ class Game {
 
         // Increment story points every second
         const now = Date.now();
-        if (now - this.lastPointIncrement >= 1000) {  // 1000ms = 1 second
+        if (now - this.lastPointIncrement >= 1000) {
             this.storyPoints++;
-            document.getElementById('storyPoints').textContent = `Story Points: ${this.storyPoints}`;
+            document.getElementById('storyPoints').textContent = `Business Value: ${this.storyPoints}`;
             this.lastPointIncrement = now;
+        }
+
+        // Add new colleague every 30 seconds
+        if (now - this.lastColleagueSpawn >= this.colleagueSpawnInterval) {
+            const newColleague = new Colleague();
+            this.colleagues.push(newColleague);
+            this.scene.add(newColleague.mesh);
+            this.lastColleagueSpawn = now;
+            this.showNewStakeholderMessage();
         }
 
         // Update player
