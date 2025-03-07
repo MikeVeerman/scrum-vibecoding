@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Office Jira Mayhem</title>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'unsafe-inline';">
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+        #score {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+        }
+        #gameOver {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 64px;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+        }
+        #gameOver h2 {
+            color: #ff4444;
+            margin: 0 0 20px 0;
+        }
+        #gameOver p {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        #restartButton {
+            margin-top: 20px;
+            padding: 15px 30px;
+            font-size: 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #restartButton:hover {
+            background-color: #45a049;
+        }
+        #titleScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        #titleScreen h1 {
+            font-size: 64px;
+            color: #ff4444;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+        }
+        #titleScreen p {
+            font-size: 24px;
+            margin: 10px 0;
+            max-width: 600px;
+            text-align: center;
+        }
+        #startButton {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 24px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        #startButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+    <script>
+        new EventSource('/esbuild').addEventListener('change', () => location.reload())
+    </script>
+</head>
+<body>
+    <div id="titleScreen">
+        <h1>Scrum Fighter II</h1>
+        <p>Welcome to the most agile office battle of your career!</p>
+        <p>Use arrow keys to move and rotate your character.</p>
+        <p>Avoid the flying Jira tickets from your enthusiastic colleagues.</p>
+        <p>Three tickets in your WIP and it's game over!</p>
+        <button id="startButton">Start Sprint</button>
+    </div>
+    <div id="score">WIP: 0</div>
+    <div id="gameOver">
+        <h2>Sprint Failed!</h2>
+        <p>Your WIP limit was exceeded!</p>
+        <button id="restartButton">Start New Sprint</button>
+    </div>
+    <script type="module" src="game.js"></script>
+</body>
+</html> 
