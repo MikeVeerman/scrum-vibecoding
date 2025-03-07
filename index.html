@@ -2,7 +2,16 @@
 <html>
 <head>
     <title>Scrum Fighter II</title>
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net; script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; style-src 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.jsdelivr.net https://www.google-analytics.com https://www.googletagmanager.com; script-src 'self' https://cdn.jsdelivr.net https://www.google-analytics.com https://www.googletagmanager.com 'unsafe-inline'; style-src 'unsafe-inline';">
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CNXDCCB8SY"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-CNXDCCB8SY');
+    </script>
     <style>
         body { margin: 0; }
         canvas { display: block; }
