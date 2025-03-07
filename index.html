@@ -14,6 +14,14 @@
             font-family: Arial, sans-serif;
             font-size: 24px;
         }
+        #storyPoints {
+            position: absolute;
+            top: 50px;
+            left: 20px;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+        }
         #gameOver {
             position: absolute;
             top: 50%;
@@ -103,9 +111,11 @@
         <button id="startButton">Start Sprint</button>
     </div>
     <div id="score">WIP: 0</div>
+    <div id="storyPoints">Business Value: 0</div>
     <div id="gameOver">
         <h2>Sprint Failed!</h2>
         <p>Your WIP limit was exceeded!</p>
+        <p>Business Value delivered: <span id="finalScore">0</span>SP</p>
         <button id="restartButton">Start New Sprint</button>
     </div>
     <script type="module" src="game.js"></script>

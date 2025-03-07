@@ -19,6 +19,8 @@ class Game {
 
         this.wip = 0;
         this.isGameOver = false;
+        this.storyPoints = 0;
+        this.lastPointIncrement = Date.now();
         
         // Set up the game but don't start yet
         this.setupGame();
@@ -187,6 +189,9 @@ class Game {
     startGame() {
         this.gameStarted = true;
         this.titleScreen.style.display = 'none';
+        this.storyPoints = 0;
+        this.lastPointIncrement = Date.now();
+        document.getElementById('storyPoints').textContent = `Story Points: ${this.storyPoints}`;
 
         // Set up controls
         this.setupControls();
@@ -224,6 +229,7 @@ class Game {
     gameOver() {
         this.isGameOver = true;
         document.getElementById('gameOver').style.display = 'block';
+        document.getElementById('finalScore').textContent = this.storyPoints;
     }
 
     restartGame() {
@@ -233,6 +239,9 @@ class Game {
         // Reset game state
         this.wip = 0;
         document.getElementById('score').textContent = 'WIP: 0';
+        this.storyPoints = 0;
+        this.lastPointIncrement = Date.now();
+        document.getElementById('storyPoints').textContent = `Story Points: ${this.storyPoints}`;
         this.isGameOver = false;
         
         // Reset player position
@@ -260,6 +269,14 @@ class Game {
         if (!this.gameStarted || this.isGameOver) {
             this.renderer.render(this.scene, this.camera);
             return;
+        }
+
+        // Increment story points every second
+        const now = Date.now();
+        if (now - this.lastPointIncrement >= 1000) {  // 1000ms = 1 second
+            this.storyPoints++;
+            document.getElementById('storyPoints').textContent = `Story Points: ${this.storyPoints}`;
+            this.lastPointIncrement = now;
         }
 
         // Update player
