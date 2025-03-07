@@ -84,19 +84,20 @@ export class Player {
         this.walkCycle = 0;
         this.isMoving = false;
         
-        // Add rotation state
+        // Add separate flags for movement and rotation
         this.rotatingLeft = false;
         this.rotatingRight = false;
+        this.movingForward = false;
+        this.movingBackward = false;
     }
 
     handleKeyDown(event) {
-        this.isMoving = true;
         switch(event.key) {
             case 'ArrowUp':
-                this.velocity.copy(this.direction).multiplyScalar(this.speed);
+                this.movingForward = true;
                 break;
             case 'ArrowDown':
-                this.velocity.copy(this.direction).multiplyScalar(-this.speed);
+                this.movingBackward = true;
                 break;
             case 'ArrowLeft':
                 this.rotatingLeft = true;
@@ -110,9 +111,10 @@ export class Player {
     handleKeyUp(event) {
         switch(event.key) {
             case 'ArrowUp':
+                this.movingForward = false;
+                break;
             case 'ArrowDown':
-                this.velocity.set(0, 0, 0);
-                this.isMoving = false;
+                this.movingBackward = false;
                 break;
             case 'ArrowLeft':
                 this.rotatingLeft = false;
@@ -142,6 +144,17 @@ export class Player {
             );
         }
 
+        // Handle movement
+        if (this.movingForward || this.movingBackward) {
+            const moveDirection = this.direction.clone();
+            if (this.movingBackward) {
+                moveDirection.multiplyScalar(-1);
+            }
+            this.velocity.copy(moveDirection.multiplyScalar(this.speed));
+        } else {
+            this.velocity.set(0, 0, 0);
+        }
+
         // Update position based on velocity
         this.mesh.position.add(this.velocity);
         
@@ -149,8 +162,8 @@ export class Player {
         this.mesh.position.x = Math.max(-24, Math.min(24, this.mesh.position.x));
         this.mesh.position.z = Math.max(-24, Math.min(24, this.mesh.position.z));
 
-        // Add simple walking animation when moving forward/backward
-        if (this.velocity.length() > 0) {
+        // Add walking animation when moving
+        if (this.movingForward || this.movingBackward) {
             this.walkCycle += 0.2;
             const swing = Math.sin(this.walkCycle) * 0.2;
             this.mesh.children.forEach((part, index) => {
